@@ -1,0 +1,201 @@
+{
+  "camera": "Canon EOS 6D",
+  "cfa_pattern": "RGGB",
+  "black_level_nominal": 2048,
+  "white_level_nominal": 15490,
+  "active_range": 13442,
+  "iso_profiles": {
+    "50": {
+      "fastest_exp_sec": 0.00025,
+      "read_noise_std_dn": 4.782750121544019,
+      "read_noise_var_dn": 22.87469872512933,
+      "row_noise_std_dn": 0.2709979797889305,
+      "col_noise_std_dn": 0.28647121238457285,
+      "random_noise_std_dn": 4.765750517863818,
+      "per_channel_std": [
+        4.783857143062519,
+        4.7892072837527815,
+        4.780065387940736,
+        4.7750467421826395
+      ],
+      "black_level_measured": 2047.2898421542147,
+      "frames_analyzed": 7
+    },
+    "100": {
+      "fastest_exp_sec": 0.00025,
+      "read_noise_std_dn": 4.782882364595868,
+      "read_noise_var_dn": 22.87596371356216,
+      "row_noise_std_dn": 0.2740389197166552,
+      "col_noise_std_dn": 0.29588929283631127,
+      "random_noise_std_dn": 4.765129626212137,
+      "per_channel_std": [
+        4.785045801391741,
+        4.789707663372657,
+        4.781413745108465,
+        4.772534261453373
+      ],
+      "black_level_measured": 2047.2183656481404,
+      "frames_analyzed": 7
+    },
+    "200": {
+      "fastest_exp_sec": 0.00025,
+      "read_noise_std_dn": 4.783369075127228,
+      "read_noise_var_dn": 22.88061970888352,
+      "row_noise_std_dn": 0.2792227112030279,
+      "col_noise_std_dn": 0.2947327302578795,
+      "random_noise_std_dn": 4.765193845296358,
+      "per_channel_std": [
+        4.781479178474043,
+        4.793946235234607,
+        4.78193483361425,
+        4.772520799163558
+      ],
+      "black_level_measured": 2047.4071051921833,
+      "frames_analyzed": 7
+    },
+    "400": {
+      "fastest_exp_sec": 0.00025,
+      "read_noise_std_dn": 5.33097715889507,
+      "read_noise_var_dn": 28.419317468660957,
+      "row_noise_std_dn": 0.3071344965636753,
+      "col_noise_std_dn": 0.5666608482995076,
+      "random_noise_std_dn": 5.269977740557895,
+      "per_channel_std": [
+        5.301310726809398,
+        5.334370201114314,
+        5.293754477460568,
+        5.3075606346268955
+      ],
+      "black_level_measured": 2047.4861439977155,
+      "frames_analyzed": 7
+    },
+    "800": {
+      "fastest_exp_sec": 0.00025,
+      "read_noise_std_dn": 6.133626427490645,
+      "read_noise_var_dn": 37.62137315201166,
+      "row_noise_std_dn": 0.37573025944057276,
+      "col_noise_std_dn": 0.5599116417883342,
+      "random_noise_std_dn": 6.06768798762902,
+      "per_channel_std": [
+        6.113215296558316,
+        6.121884985768287,
+        6.102470647114361,
+        6.08271165699116
+      ],
+      "black_level_measured": 2047.4281475950802,
+      "frames_analyzed": 7
+    },
+    "1600": {
+      "fastest_exp_sec": 0.00025,
+      "read_noise_std_dn": 8.034170594376523,
+      "read_noise_var_dn": 64.5478971395444,
+      "row_noise_std_dn": 0.5331782653222277,
+      "col_noise_std_dn": 0.6057726292607042,
+      "random_noise_std_dn": 7.9717124217096025,
+      "per_channel_std": [
+        8.043667638853288,
+        8.02460727527279,
+        8.025352409150962,
+        7.9562308439777345
+      ],
+      "black_level_measured": 2047.6275251954357,
+      "frames_analyzed": 7
+    },
+    "3200": {
+      "fastest_exp_sec": 0.00025,
+      "read_noise_std_dn": 11.971489777749133,
+      "read_noise_var_dn": 143.31656749875197,
+      "row_noise_std_dn": 0.8441464682332206,
+      "col_noise_std_dn": 0.7144975442566026,
+      "random_noise_std_dn": 11.91950721452436,
+      "per_channel_std": [
+        12.043296751824657,
+        11.956401953377059,
+        11.998190036912405,
+        11.884944411311462
+      ],
+      "black_level_measured": 2048.211536852167,
+      "frames_analyzed": 7
+    },
+    "6400": {
+      "fastest_exp_sec": 0.00025,
+      "read_noise_std_dn": 19.33510200609906,
+      "read_noise_var_dn": 373.8461695862559,
+      "row_noise_std_dn": 1.4053735306837862,
+      "col_noise_std_dn": 0.9305785334610164,
+      "random_noise_std_dn": 19.26041898362766,
+      "per_channel_std": [
+        19.460133097727613,
+        19.354390356670468,
+        19.339576964766014,
+        19.182343768781042
+      ],
+      "black_level_measured": 2048.5011499073885,
+      "frames_analyzed": 7
+    },
+    "12800": {
+      "fastest_exp_sec": 0.00025,
+      "read_noise_std_dn": 38.562648627934315,
+      "read_noise_var_dn": 1487.0778692015244,
+      "row_noise_std_dn": 2.82710592879818,
+      "col_noise_std_dn": 1.5371507610844966,
+      "random_noise_std_dn": 38.42196613185156,
+      "per_channel_std": [
+        38.802612280698916,
+        38.635360096624886,
+        38.624398337365406,
+        38.16511904901424
+      ],
+      "black_level_measured": 2047.8736867337752,
+      "frames_analyzed": 7
+    },
+    "25600": {
+      "fastest_exp_sec": 0.00025,
+      "read_noise_std_dn": 75.48361127059285,
+      "read_noise_var_dn": 5697.775570449971,
+      "row_noise_std_dn": 5.607526448089329,
+      "col_noise_std_dn": 3.042979891713286,
+      "random_noise_std_dn": 75.1953090557261,
+      "per_channel_std": [
+        74.50152652704756,
+        76.9559066839604,
+        76.93997475851963,
+        73.46749039576058
+      ],
+      "black_level_measured": 2050.360873600419,
+      "frames_analyzed": 7
+    },
+    "51200": {
+      "fastest_exp_sec": 0.00025,
+      "read_noise_std_dn": 146.62648653600368,
+      "read_noise_var_dn": 21499.326553892868,
+      "row_noise_std_dn": 10.951400776436147,
+      "col_noise_std_dn": 5.956162732985024,
+      "random_noise_std_dn": 146.034226787975,
+      "per_channel_std": [
+        143.54377238826876,
+        150.5444738089357,
+        150.58551708392338,
+        141.59038764746614
+      ],
+      "black_level_measured": 2052.3303977824844,
+      "frames_analyzed": 7
+    },
+    "65535": {
+      "fastest_exp_sec": 0.00025,
+      "read_noise_std_dn": 266.342149993086,
+      "read_noise_var_dn": 70938.14086293953,
+      "row_noise_std_dn": 20.379296755825255,
+      "col_noise_std_dn": 10.889296595007552,
+      "random_noise_std_dn": 264.28656018374045,
+      "per_channel_std": [
+        242.98812524660426,
+        289.201178011722,
+        288.47608822407847,
+        240.51943944498487
+      ],
+      "black_level_measured": 2056.349247111598,
+      "frames_analyzed": 7
+    }
+  }
+}

@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en" data-preview-ready="true">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NORTHROOM - Spaces made audible. Acoustic room index and spatial audio cue sheet.">
+  <title>NORTHROOM — Spaces made audible.</title>
+  <style>
+    /* NORTHROOM Palette & Typography */
+    :root {
+      --bg: #f4f2ec;
+      --ink: #11120f;
+      --mineral-blue: #275d63;
+      --vermilion: #e54c35;
+      --muted-olive: #85856b;
+      --rule-gray: #c8c8bf;
+      --rule-dark: #3a3b36;
+      --surface-subtle: #eae7de;
+      --font-grotesk: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Consolas", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-grotesk);
+      line-height: 1.35;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Screen-reader / Live Region */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Focus visible standard */
+    :focus-visible {
+      outline: 2px solid var(--vermilion);
+      outline-offset: 2px;
+    }
+
+    /* Full Viewport Instrument Layout (960x600 16:10 target) */
+    .instrument-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      min-height: 580px;
+      width: 100%;
+      max-width: 100vw;
+      border: 1px solid var(--ink);
+    }
+
+    /* 1. Identity Bar */
+    .identity-bar {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--ink);
+      background-color: var(--bg);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-mark::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background-color: var(--vermilion);
+    }
+
+    .brand-tagline {
+      color: var(--muted-olive);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      border-left: 1px solid var(--rule-gray);
+      padding-left: 12px;
+    }
+
+    .system-status {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+      color: var(--mineral-blue);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--mineral-blue);
+      display: inline-block;
+    }
+
+    /* 2. Workspace Body: Room Index (Left) + Dominant Score (Center) + Credits Rail (Right) */
+    .viewport-grid {
+      display: grid;
+      grid-template-columns: 240px 1fr 220px;
+      flex: 1;
+      min-height: 0;
+      background-color: var(--bg);
+    }
+
+    /* Left Panel: Room Index */
+    .panel-rooms {
+      border-right: 1px solid var(--ink);
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg);
+    }
+
+    .panel-header {
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted-olive);
+      border-bottom: 1px solid var(--rule-gray);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .room-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .room-item {
+      border-bottom: 1px solid var(--rule-gray);
+    }
+
+    .room-btn {
+      width: 100%;
+      text-align: left;
+      padding: 14px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      color: var(--ink);
+      font-family: var(--font-grotesk);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      transition: background-color 0.15s ease;
+    }
+
+    .room-btn:hover {
+      background-color: var(--surface-subtle);
+    }
+
+    .room-btn[aria-selected="true"] {
+      background-color: var(--ink);
+      color: var(--bg);
+    }
+
+    .room-num {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+
+    .room-indicator {
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+
+    .room-btn[aria-selected="true"] .room-indicator {
+      color: var(--vermilion);
+    }
+
+    /* Trigger Action Button */
+    .action-container {
+      margin-top: auto;
+      padding: 14px;
+      border-top: 1px solid var(--ink);
+      background-color: var(--surface-subtle);
+    }
+
+    .btn-enter-room {
+      width: 100%;
+      padding: 12px 14px;
+      background-color: var(--vermilion);
+      color: var(--bg);
+      border: 1px solid var(--ink);
+      font-family: var(--font-grotesk);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.1s ease, background-color 0.15s ease;
+    }
+
+    .btn-enter-room:hover {
+      background-color: #d13a24;
+    }
+
+    .btn-enter-room:active {
+      transform: translateY(1px);
+    }
+
+    .btn-enter-room:disabled {
+      background-color: var(--muted-olive);
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* Center Panel: Acoustic Score & Notation */
+    .panel-score {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--ink);
+      overflow-y: auto;
+      background-color: var(--bg);
+    }
+
+    .score-hero {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .score-pretitle {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--mineral-blue);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .score-pretitle::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background-color: var(--rule-gray);
+    }
+
+    .room-display-name {
+      font-size: clamp(26px, 3.4vw, 42px);
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      line-height: 1.05;
+      color: var(--ink);
+      transform-origin: left center;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
+
+    /* Acoustic Numerical Facts */
+    .acoustic-metrics-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--ink);
+      background-color: var(--surface-subtle);
+    }
+
+    .metric-cell {
+      padding: 12px 18px;
+      border-right: 1px solid var(--ink);
+    }
+
+    .metric-cell:last-child {
+      border-right: none;
+    }
+
+    .metric-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted-olive);
+      margin-bottom: 2px;
+    }
+
+    .metric-value {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+    }
+
+    .metric-value.highlight-flash {
+      animation: valuePulse 0.4s ease;
+    }
+
+    @keyframes valuePulse {
+      0% { color: var(--vermilion); transform: scale(1.04); }
+      100% { color: var(--ink); transform: scale(1); }
+    }
+
+    /* Code-Native Calibration Grid & Cue Sheet */
+    .cue-sheet-container {
+      padding: 18px 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .cue-sheet-header {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--muted-olive);
+      border-bottom: 1px solid var(--rule-gray);
+      padding-bottom: 4px;
+    }
+
+    .notation-grid {
+      display: grid;
+      grid-template-columns: 80px repeat(12, 1fr);
+      gap: 2px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+    }
+
+    .grid-row {
+      display: contents;
+    }
+
+    .grid-label {
+      color: var(--mineral-blue);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      padding-right: 8px;
+    }
+
+    .cal-cell {
+      height: 24px;
+      background-color: var(--surface-subtle);
+      border: 1px solid var(--rule-gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted-olive);
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .cal-cell.active-band {
+      background-color: var(--mineral-blue);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    .cal-cell.mark-vermilion {
+      background-color: var(--vermilion);
+      color: var(--bg);
+      border-color: var(--ink);
+      font-weight: bold;
+    }
+
+    /* Spatial Ticks Array */
+    .calibration-ticks {
+      display: flex;
+      justify-content: space-between;
+      height: 12px;
+      border-bottom: 1px dashed var(--rule-gray);
+      margin: 4px 0 10px;
+    }
+
+    .tick {
+      width: 1px;
+      height: 6px;
+      background-color: var(--muted-olive);
+    }
+
+    .tick.major {
+      height: 10px;
+      background-color: var(--ink);
+    }
+
+    /* Right Panel: Credits Rail */
+    .panel-credits {
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg);
+    }
+
+    .credits-body {
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex: 1;
+    }
+
+    .credit-block {
+      border-left: 2px solid var(--rule-gray);
+      padding-left: 10px;
+      transition: border-color 0.3s ease;
+    }
+
+    .credit-block.locked {
+      border-left-color: var(--vermilion);
+    }
+
+    .credit-role {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted-olive);
+      margin-bottom: 2px;
+    }
+
+    .credit-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    /* Prompt link at bottom of rail */
+    .source-prompt-link {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--muted-olive);
+      text-decoration: none;
+      padding: 10px 14px;
+      border-top: 1px solid var(--rule-gray);
+      display: block;
+    }
+
+    .source-prompt-link:hover {
+      color: var(--ink);
+      text-decoration: underline;
+    }
+
+    /* 3. Bottom Transport Bar */
+    .transport-bar {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 16px;
+      background-color: var(--ink);
+      color: var(--bg);
+      border-top: 1px solid var(--ink);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .transport-play-btn {
+      background-color: var(--bg);
+      color: var(--ink);
+      border: 1px solid var(--bg);
+      padding: 6px 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .transport-play-btn:hover {
+      background-color: var(--surface-subtle);
+    }
+
+    .transport-play-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .transport-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .transport-label {
+      color: var(--rule-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 10px;
+    }
+
+    .transport-timer {
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .transport-track-lane {
+      flex: 1;
+      height: 4px;
+      background-color: var(--rule-dark);
+      position: relative;
+    }
+
+    .transport-track-fill {
+      height: 100%;
+      width: 0%;
+      background-color: var(--vermilion);
+      transition: width 0.1s linear;
+    }
+
+    .transport-disclaimer {
+      font-size: 9px;
+      color: #8c8c83;
+      letter-spacing: 0.04em;
+    }
+
+    /* Responsive Adaptation: Below 720px */
+    @media (max-width: 720px) {
+      .instrument-shell {
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .viewport-grid {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .panel-rooms, .panel-score, .panel-credits {
+        border-right: none;
+        border-bottom: 1px solid var(--ink);
+      }
+
+      .acoustic-metrics-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-cell {
+        border-right: none;
+        border-bottom: 1px solid var(--ink);
+      }
+
+      .metric-cell:last-child {
+        border-bottom: none;
+      }
+
+      .transport-bar {
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto;
+        gap: 8px;
+        position: sticky;
+        bottom: 0;
+      }
+
+      .transport-disclaimer {
+        grid-column: span 2;
+      }
+    }
+
+    /* Reduced Motion & Save-Data */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+<body data-state="idle">
+
+  <!-- Polite Live Region for Material Accessibility Announcements -->
+  <div id="live-announcer" class="sr-only" aria-live="polite" aria-atomic="true">
+    Transit Hall active. Salt Library available.
+  </div>
+
+  <div class="instrument-shell" id="root-instrument">
+    
+    <!-- 1. Identity Bar -->
+    <header class="identity-bar" role="banner">
+      <div class="brand-mark">NORTHROOM</div>
+      <div class="brand-tagline">Spaces made audible.</div>
+      <div class="system-status">
+        <span class="status-dot" id="status-indicator" aria-hidden="true"></span>
+        <span id="system-status-text">SYSTEM INDEX ACTIVE</span>
+      </div>
+    </header>
+
+    <!-- 2. Main Viewport Grid -->
+    <main class="viewport-grid" role="main">
+
+      <!-- Left: Room Index -->
+      <nav class="panel-rooms" aria-label="Room index">
+        <div class="panel-header">
+          <span>Room Index</span>
+          <span>[3 Rooms]</span>
+        </div>
+
+        <ul class="room-list" role="tablist">
+          <li class="room-item" role="presentation">
+            <button class="room-btn" id="room-tab-transit" role="tab" aria-selected="true" aria-controls="panel-transit" data-room-id="transit">
+              <span class="room-num">01</span>
+              <span>Transit Hall</span>
+              <span class="room-indicator" aria-hidden="true">[x]</span>
+            </button>
+          </li>
+          <li class="room-item" role="presentation">
+            <button class="room-btn" id="room-tab-salt" role="tab" aria-selected="false" aria-controls="panel-salt" data-room-id="salt">
+              <span class="room-num">02</span>
+              <span>Salt Library</span>
+              <span class="room-indicator" aria-hidden="true">[ ]</span>
+            </button>
+          </li>
+          <li class="room-item" role="presentation">
+            <button class="room-btn" id="room-tab-glass" role="tab" aria-selected="false" aria-controls="panel-glass" data-room-id="glass">
+              <span class="room-num">03</span>
+              <span>Glass House</span>
+              <span class="room-indicator" aria-hidden="true">[ ]</span>
+            </button>
+          </li>
+        </ul>
+
+        <!-- Action Trigger -->
+        <div class="action-container">
+          <button class="btn-enter-room" id="btn-enter-salt" data-preview-action="enter-salt-library">
+            <span>Enter Salt Library</span>
+            <span aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Center: Acoustic Score & Notation -->
+      <section class="panel-score" id="score-viewport" aria-labelledby="score-heading">
+        <div class="score-hero">
+          <div class="score-pretitle" id="score-heading">Acoustic Score &middot; Room Geometry</div>
+          <h1 class="room-display-name" id="display-room-name">Transit Hall</h1>
+        </div>
+
+        <!-- Factual Numerical Matrix -->
+        <div class="acoustic-metrics-bar" role="region" aria-label="Acoustic measurements">
+          <div class="metric-cell">
+            <div class="metric-label">Reverberation (RT60)</div>
+            <div class="metric-value" id="val-dry">Live 1.45s</div>
+          </div>
+          <div class="metric-cell">
+            <div class="metric-label">Warmth Index</div>
+            <div class="metric-value" id="val-warmth">Warmth 48</div>
+          </div>
+          <div class="metric-cell">
+            <div class="metric-label">Excerpt Duration</div>
+            <div class="metric-value" id="val-excerpt">Excerpt 00:34</div>
+          </div>
+        </div>
+
+        <!-- Code-Native Acoustic Cue Sheet Notation -->
+        <div class="cue-sheet-container">
+          <div class="cue-sheet-header">
+            <span>Octave Band Spatialization Matrix</span>
+            <span id="cue-calibration-stamp">CAL: 100Hz &mdash; 8kHz</span>
+          </div>
+
+          <div class="calibration-ticks" aria-hidden="true">
+            <div class="tick major"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick major"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick major"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick major"></div>
+          </div>
+
+          <div class="notation-grid" id="notation-grid" role="table" aria-label="Frequency matrix">
+            <!-- Low Band Row -->
+            <div class="grid-row" role="row">
+              <span class="grid-label" role="rowheader">125Hz LF</span>
+              <div class="cal-cell active-band" role="cell"></div>
+              <div class="cal-cell active-band" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell active-band" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell mark-vermilion" role="cell">&times;</div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell active-band" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell active-band" role="cell"></div>
+            </div>
+
+            <!-- Mid Band Row -->
+            <div class="grid-row" role="row">
+              <span class="grid-label" role="rowheader">1.0kHz MF</span>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell active-band" role="cell"></div>
+              <div class="cal-cell active-band" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell mark-vermilion" role="cell">&bull;</div>
+              <div class="cal-cell active-band" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell active-band" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell active-band" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+            </div>
+
+            <!-- High Band Row -->
+            <div class="grid-row" role="row">
+              <span class="grid-label" role="rowheader">4.0kHz HF</span>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell active-band" role="cell"></div>
+              <div class="cal-cell active-band" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell active-band" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell mark-vermilion" role="cell">&bull;</div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+              <div class="cal-cell" role="cell"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Credits Rail -->
+      <aside class="panel-credits" aria-label="Project credits">
+        <div class="panel-header">
+          <span>Credits</span>
+          <span>[Studio Lead]</span>
+        </div>
+
+        <div class="credits-body">
+          <div class="credit-block" id="block-direction">
+            <div class="credit-role">Direction</div>
+            <div class="credit-name" id="cred-direction">NORTHROOM</div>
+          </div>
+          <div class="credit-block" id="block-composition">
+            <div class="credit-role">Composition</div>
+            <div class="credit-name" id="cred-composition">Kaelen Vance</div>
+          </div>
+          <div class="credit-block" id="block-mix">
+            <div class="credit-role">Mix</div>
+            <div class="credit-name" id="cred-mix">Transit Sound Unit</div>
+          </div>
+        </div>
+
+        <a href="#source-prompt" class="source-prompt-link" id="source-prompt-anchor">
+          &bull; Source prompt specification
+        </a>
+      </aside>
+
+    </main>
+
+    <!-- 3. Bottom Transport Instrument -->
+    <footer class="transport-bar" role="contentinfo">
+      <button class="transport-play-btn" id="transport-btn" aria-label="Play scenario excerpt">
+        <span id="transport-icon" aria-hidden="true">&#9658;</span>
+        <span id="transport-text">PLAY EXCERPT</span>
+      </button>
+
+      <div class="transport-meta">
+        <span class="transport-label">Scenario excerpt.</span>
+        <span class="transport-timer" id="transport-time">00:00 / 00:34</span>
+        <div class="transport-track-lane" aria-hidden="true">
+          <div class="transport-track-fill" id="transport-progress"></div>
+        </div>
+      </div>
+
+      <div class="transport-disclaimer">
+        Simulation instrument &mdash; no copyrighted media loaded
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Internal Deterministic Choreography and Playback Runtime -->
+  <script>
+    (function () {
+      "use strict";
+
+      const rooms = {
+        transit: {
+          name: "Transit Hall",
+          dry: "Live 1.45s",
+          warmth: "Warmth 48",
+          excerpt: "Excerpt 00:34",
+          maxSec: 34,
+          direction: "NORTHROOM",
+          composition: "Kaelen Vance",
+          mix: "Transit Sound Unit"
+        },
+        salt: {
+          name: "Salt Library",
+          dry: "Dry 0.22s",
+          warmth: "Warmth 64",
+          excerpt: "Excerpt 00:18",
+          maxSec: 18,
+          direction: "NORTHROOM",
+          composition: "Milo Hart",
+          mix: "Lena Orson"
+        },
+        glass: {
+          name: "Glass House",
+          dry: "Diffuse 0.88s",
+          warmth: "Warmth 52",
+          excerpt: "Excerpt 00:22",
+          maxSec: 22,
+          direction: "NORTHROOM",
+          composition: "Milo Hart",
+          mix: "Lena Orson"
+        }
+      };
+
+      let activeRoom = "transit";
+      let isPlaying = false;
+      let playTimer = null;
+      let currentSeconds = 0;
+      let audioCtx = null;
+
+      // DOM Elements
+      const root = document.documentElement;
+      const announcer = document.getElementById("live-announcer");
+      const btnEnterSalt = document.getElementById("btn-enter-salt");
+      const roomTabs = {
+        transit: document.getElementById("room-tab-transit"),
+        salt: document.getElementById("room-tab-salt"),
+        glass: document.getElementById("room-tab-glass")
+      };
+
+      const nameDisplay = document.getElementById("display-room-name");
+      const valDry = document.getElementById("val-dry");
+      const valWarmth = document.getElementById("val-warmth");
+      const valExcerpt = document.getElementById("val-excerpt");
+
+      const credDirection = document.getElementById("cred-direction");
+      const credComposition = document.getElementById("cred-composition");
+      const credMix = document.getElementById("cred-mix");
+
+      const blockDirection = document.getElementById("block-direction");
+      const blockComposition = document.getElementById("block-composition");
+      const blockMix = document.getElementById("block-mix");
+
+      const transportBtn = document.getElementById("transport-btn");
+      const transportText = document.getElementById("transport-text");
+      const transportIcon = document.getElementById("transport-icon");
+      const transportTime = document.getElementById("transport-time");
+      const transportProgress = document.getElementById("transport-progress");
+      const statusText = document.getElementById("system-status-text");
+
+      // Check Save-Data & prefers-reduced-motion
+      const hasSaveData = Boolean(navigator.connection && navigator.connection.saveData);
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // Web Audio Synthesizer (Local Acoustic Simulation)
+      function initAudio() {
+        if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+      }
+
+      function triggerChime(freq, decay) {
+        if (!audioCtx) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + decay);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start();
+          osc.stop(audioCtx.currentTime + decay);
+        } catch (e) {
+          // Silent fallback
+        }
+      }
+
+      // UI Selection Update
+      function selectRoomImmediate(roomId) {
+        activeRoom = roomId;
+        const data = rooms[roomId];
+
+        // Update Tabs
+        Object.keys(roomTabs).forEach(id => {
+          const btn = roomTabs[id];
+          const isSelected = (id === roomId);
+          btn.setAttribute("aria-selected", isSelected ? "true" : "false");
+          const ind = btn.querySelector(".room-indicator");
+          if (ind) ind.textContent = isSelected ? "[x]" : "[ ]";
+        });
+
+        // Set Text & Data
+        nameDisplay.textContent = data.name;
+        valDry.textContent = data.dry;
+        valWarmth.textContent = data.warmth;
+        valExcerpt.textContent = data.excerpt;
+
+        credDirection.textContent = data.direction;
+        credComposition.textContent = data.composition;
+        credMix.textContent = data.mix;
+
+        blockDirection.classList.add("locked");
+        blockComposition.classList.add("locked");
+        blockMix.classList.add("locked");
+
+        // Stop any active play simulation and reset timer
+        stopPlayback();
+        transportTime.textContent = `00:00 / 00:${String(data.maxSec).padStart(2, '0')}`;
+        transportProgress.style.width = "0%";
+
+        announcer.textContent = `${data.name} selected. ${data.dry}. ${data.warmth}. Scenario excerpt ${data.maxSec} seconds ready.`;
+      }
+
+      // Transport Play/Pause Simulation
+      function togglePlayback() {
+        initAudio();
+        if (isPlaying) {
+          pausePlayback();
+        } else {
+          startPlayback();
+        }
+      }
+
+      function startPlayback() {
+        isPlaying = true;
+        document.body.setAttribute("data-state", "excerpt-playing");
+        transportBtn.setAttribute("aria-label", "Pause scenario excerpt");
+        transportText.textContent = "PAUSE";
+        transportIcon.innerHTML = "&#10074;&#10074;";
+        triggerChime(activeRoom === "salt" ? 520 : 380, 0.4);
+
+        const maxSec = rooms[activeRoom].maxSec;
+        playTimer = setInterval(() => {
+          currentSeconds++;
+          if (currentSeconds > maxSec) {
+            stopPlayback();
+            return;
+          }
+          const curStr = String(currentSeconds).padStart(2, '0');
+          const maxStr = String(maxSec).padStart(2, '0');
+          transportTime.textContent = `00:${curStr} / 00:${maxStr}`;
+          transportProgress.style.width = `${(currentSeconds / maxSec) * 100}%`;
+          if (currentSeconds % 3 === 0) {
+            triggerChime(activeRoom === "salt" ? 640 : 420, 0.2);
+          }
+        }, 1000);
+      }
+
+      function pausePlayback() {
+        isPlaying = false;
+        clearInterval(playTimer);
+        document.body.setAttribute("data-state", "excerpt-paused");
+        transportBtn.setAttribute("aria-label", "Resume scenario excerpt");
+        transportText.textContent = "RESUME";
+        transportIcon.innerHTML = "&#9658;";
+      }
+
+      function stopPlayback() {
+        isPlaying = false;
+        clearInterval(playTimer);
+        currentSeconds = 0;
+        document.body.setAttribute("data-state", "room-active");
+        transportBtn.setAttribute("aria-label", "Play scenario excerpt");
+        transportText.textContent = "PLAY EXCERPT";
+        transportIcon.innerHTML = "&#9658;";
+      }
+
+      // 5-Second Deterministic Preview Sequence: "Enter Salt Library"
+      function executeDeterministicSaltSequence() {
+        initAudio();
+        stopPlayback();
+
+        // Immediate skip for reduced motion or save data
+        if (prefersReducedMotion || hasSaveData) {
+          selectRoomImmediate("salt");
+          root.setAttribute("data-preview-action-complete", "true");
+          statusText.textContent = "SALT LIBRARY ACTIVE";
+          return;
+        }
+
+        btnEnterSalt.disabled = true;
+        root.removeAttribute("data-preview-action-complete");
+        document.body.setAttribute("data-state", "entering-room");
+
+        // 0.0s – 1.0s: Salt Library receives selection & announcement
+        statusText.textContent = "ENTERING SALT LIBRARY...";
+        announcer.textContent = "Entering Salt Library.";
+        triggerChime(320, 0.8);
+
+        // Update tabs immediately
+        Object.keys(roomTabs).forEach(id => {
+          const isSelected = (id === "salt");
+          roomTabs[id].setAttribute("aria-selected", isSelected ? "true" : "false");
+          const ind = roomTabs[id].querySelector(".room-indicator");
+          if (ind) ind.textContent = isSelected ? "[x]" : "[ ]";
+        });
+
+        // 1.0s – 2.4s: Room Name expands across score while fixed calibration marks resolve
+        setTimeout(() => {
+          nameDisplay.style.transform = "scale(1.03)";
+          nameDisplay.textContent = "Salt Library";
+          triggerChime(440, 0.5);
+
+          // Resolve calibration ticks
+          const gridCells = document.querySelectorAll(".cal-cell");
+          gridCells.forEach((c, i) => {
+            if (i % 3 === 0) c.classList.add("active-band");
+          });
+        }, 1000);
+
+        // 2.4s – 4.0s: Dry 0.22s, Warmth 64, and Excerpt 00:18 update in sequence
+        setTimeout(() => {
+          nameDisplay.style.transform = "scale(1)";
+          valDry.textContent = "Dry 0.22s";
+          valDry.classList.add("highlight-flash");
+          triggerChime(560, 0.2);
+        }, 2400);
+
+        setTimeout(() => {
+          valWarmth.textContent = "Warmth 64";
+          valWarmth.classList.add("highlight-flash");
+          triggerChime(620, 0.2);
+        }, 3200);
+
+        setTimeout(() => {
+          valExcerpt.textContent = "Excerpt 00:18";
+          valExcerpt.classList.add("highlight-flash");
+          transportTime.textContent = "00:00 / 00:18";
+          transportProgress.style.width = "0%";
+          triggerChime(700, 0.2);
+        }, 3800);
+
+        // 4.0s – 5.0s: Credits lock & transport settles ready
+        setTimeout(() => {
+          credDirection.textContent = "NORTHROOM";
+          credComposition.textContent = "Milo Hart";
+          credMix.textContent = "Lena Orson";
+
+          blockDirection.classList.add("locked");
+          blockComposition.classList.add("locked");
+          blockMix.classList.add("locked");
+
+          statusText.textContent = "SALT LIBRARY ACTIVE";
+          announcer.textContent = "Salt Library active. Dry 0.22s. Warmth 64. Credits locked. Excerpt 00:18 ready.";
+        }, 4200);
+
+        // 5.0s: Stable Final State
+        setTimeout(() => {
+          activeRoom = "salt";
+          btnEnterSalt.disabled = false;
+          document.body.setAttribute("data-state", "room-active");
+          root.setAttribute("data-preview-action-complete", "true");
+        }, 5000);
+      }
+
+      // Event Listeners
+      btnEnterSalt.addEventListener("click", executeDeterministicSaltSequence);
+
+      transportBtn.addEventListener("click", togglePlayback);
+
+      Object.keys(roomTabs).forEach(id => {
+        roomTabs[id].addEventListener("click", () => {
+          if (id === "salt") {
+            executeDeterministicSaltSequence();
+          } else {
+            selectRoomImmediate(id);
+          }
+        });
+      });
+
+      // Keyboard Accessibility
+      document.addEventListener("keydown", (e) => {
+        if (e.key === " " && e.target === transportBtn) {
+          e.preventDefault();
+          togglePlayback();
+        }
+      });
+
+      // Initial State Configuration
+      if (prefersReducedMotion || hasSaveData) {
+        selectRoomImmediate("salt");
+        root.setAttribute("data-preview-action-complete", "true");
+      } else {
+        selectRoomImmediate("transit");
+      }
+    })();
+  </script>
+</body>
+</html>

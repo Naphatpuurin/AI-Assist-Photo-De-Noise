@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Huge RAW camera files (Gigabytes)
+data/RAW/
+data/raw/
+data/101CANON/
+data/*.CR2
+data/*.cr2
+
+# Pre-extracted binary training cache (300MB)
+data/*.npy
+*.npy
+
+# DNG outputs (120MB+ each)
+*.dng
+*.DNG
+test_*.dng
+data/*.dng
+data/denoised_exports/
+
+# Checkpoints (ignore intermediate epochs, keep the best trained model)
+models/checkpoints/nafnet_epoch_*.pt
